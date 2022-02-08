@@ -13,13 +13,12 @@ const fileInput = document.getElementById('file');
 
 //Ham du doan
 const predict = async (modelURL) => {
-  //Neu chua load duoc model --> thi load
-  if (!model) model = await tf.loadGraphModel(modelURL);
+
   //Chay qua cac file input
   const files = fileInput.files;
   [...files].map(async (img) => {
     let result = getDataRbg()
-    console.log('result', result);
+    // console.log('result', result);
     processedImage = tf.tensor3d(result)
     // shape has to be the same as it was for training of the model
     const prediction = model.predict(tf.reshape(processedImage, shape = [-1, 210, 280, 3]));
@@ -29,7 +28,7 @@ const predict = async (modelURL) => {
 };
 
 const renderImageLabel = (img, label) => {
-  console.log('layber', layber);
+  console.log('layber', label);
   const reader = new FileReader();
   reader.onload = () => {
     preview.innerHTML += `<div class="image-block">
@@ -71,6 +70,12 @@ let arrayToRgbArray = (data) => {
   }
   return input
 }
+const initModel = async () => {
+  console.log("run");
+  if (!model) model = await tf.loadGraphModel(modelURL);
+  console.log('model', model);
+}
+initModel()
 fileInput.addEventListener("change", () => numberOfFiles.innerHTML = "Selected " + fileInput.files.length + " files", false);
 predictButton.addEventListener("click", () => predict(modelURL));
 clearButton.addEventListener("click", () => preview.innerHTML = "");
