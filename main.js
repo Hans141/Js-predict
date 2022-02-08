@@ -1,7 +1,7 @@
 let model;
 
 //Chay model o tren local
-const modelURL = 'http://localhost:5501/model_js_2/model.json';
+const modelURL = 'model_js_2/model.json';
 
 //Lay cac button/input/div
 const preview = document.getElementById("preview");
@@ -29,6 +29,7 @@ const predict = async (modelURL) => {
 };
 
 const renderImageLabel = (img, label) => {
+  console.log('layber', layber);
   const reader = new FileReader();
   reader.onload = () => {
     preview.innerHTML += `<div class="image-block">
