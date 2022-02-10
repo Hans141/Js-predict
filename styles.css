@@ -91,13 +91,13 @@ body {
   width: 100%;
 } */
 .container-video #videoElement1{
-  height: 210px;
-  width: 280px;
+  height: 280px;
+  width: 407px;
   margin: 20px;
 }
 .container-video #canvas1 {
-  width: 280px;
-  height: 210px;
+  width: 407px;
+  height: 280px;
   border-radius: 4px;
   margin: 20px;
 }
