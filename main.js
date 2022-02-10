@@ -44,7 +44,6 @@ const getDataRbg = async () => {
   var img = new Image();
   img.crossOrigin = 'anonymous';
   const files = fileInput.files;
-  console.log('files', files);
   img.src = await URL.createObjectURL(files[0])
   var canvas2 = document.getElementById('canvas2');
   var ctx2 = canvas2.getContext('2d');
@@ -123,7 +122,7 @@ const snapshot = async () => {
   processedImage = await tf.tensor3d(result)
   const prediction = model.predict(tf.reshape(processedImage, shape = [-1, 210, 280, 3]));
   const label = prediction.argMax(axis = 1).dataSync()[0];
-  message.innerHTML = `Label: ${label}`
+  message.innerHTML = `${label}: ${messageModel[label]} `
   console.log('label', label)
 
 
@@ -132,6 +131,7 @@ const main = async () => {
   initModel()
   await handleConnectCamera()
   setupCamera()
+  console.log('messageModel', messageModel)
 }
 main()
 // fileInput.addEventListener("change", () => numberOfFiles.innerHTML = "Selected " + fileInput.files.length + " files", false);
