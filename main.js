@@ -5,30 +5,30 @@ const modelURL = 'model_js_2/model.json';
 
 //Lay cac button/input/div
 const preview = document.getElementById("preview");
-const predictButton = document.getElementById("predict");
-const clearButton = document.getElementById("clear");
-const testButton = document.getElementById("test");
+// const predictButton = document.getElementById("predict");
+// const clearButton = document.getElementById("clear");
+const snapButton = document.getElementById("snap");
 const numberOfFiles = document.getElementById("number-of-files");
 const fileInput = document.getElementById('file');
+const message = document.getElementById('message');
+let cameraOptions = []
+const timer = ms => new Promise(res => setTimeout(res, ms))
 
 //Ham du doan
-const predict = async (modelURL) => {
+const predict = async () => {
 
   //Chay qua cac file input
   const files = fileInput.files;
-  [...files].map(async (img) => {
-    let result = getDataRbg()
-    // console.log('result', result);
-    processedImage = tf.tensor3d(result)
-    // shape has to be the same as it was for training of the model
-    const prediction = model.predict(tf.reshape(processedImage, shape = [-1, 210, 280, 3]));
-    const label = prediction.argMax(axis = 1).dataSync()[0];
-    renderImageLabel(img, label);
-  })
+  let result = await getDataRbg()
+  console.log('result', result);
+  processedImage = await tf.tensor3d(result)
+  const prediction = model.predict(tf.reshape(processedImage, shape = [-1, 210, 280, 3]));
+  const label = prediction.argMax(axis = 1).dataSync()[0];
+  renderImageLabel(files[0], label);
 };
 
 const renderImageLabel = (img, label) => {
-  console.log('layber', label);
+  console.log('label', label);
   const reader = new FileReader();
   reader.onload = () => {
     preview.innerHTML += `<div class="image-block">
@@ -40,13 +40,12 @@ const renderImageLabel = (img, label) => {
   reader.readAsDataURL(img);
 };
 
-const getDataRbg = () => {
+const getDataRbg = async () => {
   var img = new Image();
   img.crossOrigin = 'anonymous';
   const files = fileInput.files;
-  // console.log('files', files);
-  img.src = URL.createObjectURL(files[0])
-  // img.src = "../../static/UPLOAD/test.png"
+  console.log('files', files);
+  img.src = await URL.createObjectURL(files[0])
   var canvas2 = document.getElementById('canvas2');
   var ctx2 = canvas2.getContext('2d');
   img.onload = function () {
@@ -75,7 +74,67 @@ const initModel = async () => {
   if (!model) model = await tf.loadGraphModel(modelURL);
   console.log('model', model);
 }
-initModel()
-fileInput.addEventListener("change", () => numberOfFiles.innerHTML = "Selected " + fileInput.files.length + " files", false);
-predictButton.addEventListener("click", () => predict(modelURL));
-clearButton.addEventListener("click", () => preview.innerHTML = "");
+const handleConnectCamera = async () => {
+  let devices = await navigator.mediaDevices.enumerateDevices()
+  let videoDevices = devices.filter(
+    device => device.kind == "videoinput"
+  );
+  if (videoDevices.length == 0) {
+    console.log("no device")
+  }
+  else {
+    console.log('videoDevices', videoDevices)
+    videoDevices.map(device => {
+      cameraOptions.push({
+        label: device.label,
+        value: device.deviceId,
+      });
+    });
+  }
+}
+const setupCamera = async () => {
+  let video1 = document.getElementById("videoElement1");
+  navigator.permissions
+    .query({ name: "camera" })
+    .then(permissionObj => {
+      if (permissionObj.state == "denied") {
+        console.log("no permissions")
+      }
+    })
+    .catch(error => {
+      console.log("Got error :", error);
+    });
+  if (video1) {
+    console.log('cameraOptions', cameraOptions)
+    const stream1 = await navigator.mediaDevices.getUserMedia({
+      video: { deviceId: cameraOptions[0].value },
+    });
+    video1.srcObject = stream1;
+  }
+}
+const snapshot = async () => {
+  let video = document.getElementById("videoElement1");
+  let canvas = document.getElementById("canvas1");
+  let context = canvas.getContext("2d");
+  context.drawImage(video, 0, 0, 280, 210);
+  let pixel = context.getImageData(0, 0, 280, 210);
+  let data = pixel.data
+  let result = arrayToRgbArray(data)
+  processedImage = await tf.tensor3d(result)
+  const prediction = model.predict(tf.reshape(processedImage, shape = [-1, 210, 280, 3]));
+  const label = prediction.argMax(axis = 1).dataSync()[0];
+  message.innerHTML = `Label: ${label}`
+  console.log('label', label)
+
+
+}
+const main = async () => {
+  initModel()
+  await handleConnectCamera()
+  setupCamera()
+}
+main()
+// fileInput.addEventListener("change", () => numberOfFiles.innerHTML = "Selected " + fileInput.files.length + " files", false);
+// predictButton.addEventListener("click", () => predict(modelURL));
+snapButton.addEventListener("click", () => snapshot());
+// clearButton.addEventListener("click", () => preview.innerHTML = "");

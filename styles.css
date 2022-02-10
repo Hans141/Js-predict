@@ -73,6 +73,34 @@ body {
 .preview {
   text-align: center;
 }
-/* #canvas2{
+#canvas2{
   display: none;
+}
+.container-video {
+  position: relative;
+  display: flex;
+  justify-content: center;
+}
+.container-video #canvas1 {
+  left: 0;
+  z-index: 1;
+}
+/* .container-video #canvas-overlayer {
+  left: 0;
+  z-index: 10;
+  width: 100%;
 } */
+.container-video #videoElement1{
+  height: 210px;
+  width: 280px;
+  margin: 20px;
+}
+.container-video #canvas1 {
+  width: 280px;
+  height: 210px;
+  border-radius: 4px;
+  margin: 20px;
+}
+#message {
+  font-size: 24px;
+}
