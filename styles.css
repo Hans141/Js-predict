@@ -115,3 +115,7 @@ body {
   display: flex;
   position: relative;
 }
+#timeMessage {
+  font-size: 32px;
+  margin: 10px;
+}

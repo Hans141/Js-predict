@@ -1,7 +1,7 @@
 let model;
 
 //Chay model o tren local
-const modelURL = 'model_js_2/model.json';
+const modelURL = 'model_js_3/model.json';
 
 //Lay cac button/input/div
 const preview = document.getElementById("preview");
@@ -11,6 +11,7 @@ const snapButton = document.getElementById("snap");
 const numberOfFiles = document.getElementById("number-of-files");
 const fileInput = document.getElementById('file');
 const message = document.getElementById('message');
+const timeMessage = document.getElementById('timeMessage');
 let cameraOptions = []
 const timer = ms => new Promise(res => setTimeout(res, ms))
 
@@ -61,9 +62,9 @@ let arrayToRgbArray = (data) => {
     input.push([])
     for (let j = 0; j < 280; j++) {
       input[i].push([])
-      input[i][j].push(data[(i * 280 + j) * 4 + 2])
-      input[i][j].push(data[(i * 280 + j) * 4 + 1])
       input[i][j].push(data[(i * 280 + j) * 4])
+      input[i][j].push(data[(i * 280 + j) * 4 + 1])
+      input[i][j].push(data[(i * 280 + j) * 4 + 2])
     }
   }
   return input
@@ -119,8 +120,12 @@ const snapshot = async () => {
   let pixel = context.getImageData(0, 0, 280, 210);
   let data = pixel.data
   let result = arrayToRgbArray(data)
+  const before = Date.now();
   processedImage = await tf.tensor3d(result)
-  const prediction = model.predict(tf.reshape(processedImage, shape = [-1, 210, 280, 3]));
+  const prediction = await model.predict(tf.reshape(processedImage, shape = [-1, 210, 280, 3]));
+  const after = Date.now();
+  console.log(`${after - before}ms`);
+  timeMessage.innerHTML = `Model processing time ${after - before}ms`
   const label = prediction.argMax(axis = 1).dataSync()[0];
   message.innerHTML = `${label}: ${messageModel[label]} `
   console.log('label', label)
