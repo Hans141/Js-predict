@@ -12,6 +12,7 @@ const numberOfFiles = document.getElementById("number-of-files");
 const fileInput = document.getElementById('file');
 const message = document.getElementById('message');
 const timeMessage = document.getElementById('timeMessage');
+const loadingMessage = document.getElementsByClassName("loading")[0]
 let cameraOptions = []
 const timer = ms => new Promise(res => setTimeout(res, ms))
 
@@ -109,7 +110,7 @@ const setupCamera = async () => {
       deviceId = cameraOptions[1].value ? cameraOptions.length > 1 : ""
     }
     const stream1 = await navigator.mediaDevices.getUserMedia({
-      video: { deviceId: cameraOptions[0].value },
+      video: { deviceId: deviceId },
     });
     video1.srcObject = stream1;
   }
@@ -123,6 +124,7 @@ const snapshot = async () => {
   let data = pixel.data
   let result = arrayToRgbArray(data)
   const before = Date.now();
+  console.log('result', result)
   processedImage = await tf.tensor3d(result)
   const prediction = await model.predict(tf.reshape(processedImage, shape = [-1, 210, 280, 3]));
   const after = Date.now();
@@ -134,14 +136,25 @@ const snapshot = async () => {
 
 
 }
+const runModelFisrt = async () => {
+  console.log('first', first)
+  const prediction = await model.predict(tf.reshape(first, shape = [-1, 210, 280, 3]));
+  console.log('prediction', prediction)
+}
 const main = async () => {
-  initModel()
+  initModel().then(() => {
+    loadingMessage.classList.add("d-none")
+
+    runModelFisrt().then(() => {
+      snapButton.classList.remove("d-none")
+    })
+
+  })
   await handleConnectCamera()
   setupCamera()
-  console.log('messageModel', messageModel)
 }
 
-tf.setBackend("webgl").then(() => {
+tf.setBackend("webgl").then(async () => {
   main()
 })
 // fileInput.addEventListener("change", () => numberOfFiles.innerHTML = "Selected " + fileInput.files.length + " files", false);

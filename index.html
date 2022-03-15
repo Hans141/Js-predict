@@ -16,7 +16,11 @@
     <!-- <label for="file" class="file-form__select-file_label">Choose files</label> -->
     <!-- <button type="submit" class="file-form__button file-form__button_predict" id="predict">Predict</button> -->
     <!-- <button type="submit" class="file-form__button file-form__button_clear" id="clear">Clear</button> -->
-    <button type="submit" class="file-form__button file-form__button_clear" id="snap">Snap</button>
+    <button type="submit" class="file-form__button file-form__button_clear  d-none" id="snap">Snap</button>
+    <div class="loading">
+        <p id="loadingMessage">Model loading</p>
+        <img src="loading.gif" alt="">
+    </div>
     <p id="timeMessage"></p>
     <span class="file-form__files" id="number-of-files"></span>
     <canvas id="canvas2" width="280" height="210"></canvas>
@@ -34,6 +38,7 @@
     </div>
 </main>
 <div id="preview"></div>
+<script src="first.js"></script>
 <script src="main.js"></script>
 <script src="constants.js"></script>
 </body>

@@ -119,3 +119,20 @@ body {
   font-size: 32px;
   margin: 10px;
 }
+img {
+  width: 24px;
+  height: 25px;
+}
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#loadingMessage {
+  font-size: 24px;
+  margin-right: 10px;
+}
+.d-none {
+  display: none;
+}
