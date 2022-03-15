@@ -2,7 +2,7 @@ let model;
 
 //Chay model o tren local
 const modelURL = 'model_js_3/model.json';
-
+// console.log(tf.setBackend(""))
 //Lay cac button/input/div
 const preview = document.getElementById("preview");
 // const predictButton = document.getElementById("predict");
@@ -21,7 +21,6 @@ const predict = async () => {
   //Chay qua cac file input
   const files = fileInput.files;
   let result = await getDataRbg()
-  console.log('result', result);
   processedImage = await tf.tensor3d(result)
   const prediction = model.predict(tf.reshape(processedImage, shape = [-1, 210, 280, 3]));
   const label = prediction.argMax(axis = 1).dataSync()[0];
@@ -29,7 +28,6 @@ const predict = async () => {
 };
 
 const renderImageLabel = (img, label) => {
-  console.log('label', label);
   const reader = new FileReader();
   reader.onload = () => {
     preview.innerHTML += `<div class="image-block">
@@ -123,11 +121,9 @@ const snapshot = async () => {
   context.drawImage(video, 0, 0, 280, 210);
   let pixel = context.getImageData(0, 0, 280, 210);
   let data = pixel.data
-  console.log('data', data)
   let result = arrayToRgbArray(data)
   const before = Date.now();
   processedImage = await tf.tensor3d(result)
-  console.log('processedImage', processedImage)
   const prediction = await model.predict(tf.reshape(processedImage, shape = [-1, 210, 280, 3]));
   const after = Date.now();
   console.log(`${after - before}ms`);
@@ -144,7 +140,10 @@ const main = async () => {
   setupCamera()
   console.log('messageModel', messageModel)
 }
-main()
+
+tf.setBackend("webgl").then(() => {
+  main()
+})
 // fileInput.addEventListener("change", () => numberOfFiles.innerHTML = "Selected " + fileInput.files.length + " files", false);
 // predictButton.addEventListener("click", () => predict(modelURL));
 snapButton.addEventListener("click", () => snapshot());
