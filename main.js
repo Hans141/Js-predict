@@ -106,6 +106,10 @@ const setupCamera = async () => {
     });
   if (video1) {
     console.log('cameraOptions', cameraOptions)
+    let deviceId = cameraOptions[0].value;
+    if (cameraOptions[0].label == "Snap Camera") {
+      deviceId = cameraOptions[1].value ? cameraOptions.length > 1 : ""
+    }
     const stream1 = await navigator.mediaDevices.getUserMedia({
       video: { deviceId: cameraOptions[0].value },
     });
@@ -119,9 +123,11 @@ const snapshot = async () => {
   context.drawImage(video, 0, 0, 280, 210);
   let pixel = context.getImageData(0, 0, 280, 210);
   let data = pixel.data
+  console.log('data', data)
   let result = arrayToRgbArray(data)
   const before = Date.now();
   processedImage = await tf.tensor3d(result)
+  console.log('processedImage', processedImage)
   const prediction = await model.predict(tf.reshape(processedImage, shape = [-1, 210, 280, 3]));
   const after = Date.now();
   console.log(`${after - before}ms`);
