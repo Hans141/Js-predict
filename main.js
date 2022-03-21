@@ -1,7 +1,7 @@
 let model;
 
 //Chay model o tren local
-const modelURL = 'model_js_3/model.json';
+const modelURL = 'model_js_4/model.json';
 // console.log(tf.setBackend(""))
 //Lay cac button/input/div
 const preview = document.getElementById("preview");
