@@ -1,12 +1,6 @@
 let model;
-
-//Chay model o tren local
 const modelURL = 'model_js_4/model.json';
-// console.log(tf.setBackend(""))
-//Lay cac button/input/div
 const preview = document.getElementById("preview");
-// const predictButton = document.getElementById("predict");
-// const clearButton = document.getElementById("clear");
 const snapButton = document.getElementById("snap");
 const numberOfFiles = document.getElementById("number-of-files");
 const fileInput = document.getElementById('file');
@@ -14,31 +8,6 @@ const message = document.getElementById('message');
 const timeMessage = document.getElementById('timeMessage');
 const loadingMessage = document.getElementsByClassName("loading")[0]
 let cameraOptions = []
-const timer = ms => new Promise(res => setTimeout(res, ms))
-
-//Ham du doan
-const predict = async () => {
-
-  //Chay qua cac file input
-  const files = fileInput.files;
-  let result = await getDataRbg()
-  processedImage = await tf.tensor3d(result)
-  const prediction = model.predict(tf.reshape(processedImage, shape = [-1, 210, 280, 3]));
-  const label = prediction.argMax(axis = 1).dataSync()[0];
-  renderImageLabel(files[0], label);
-};
-
-const renderImageLabel = (img, label) => {
-  const reader = new FileReader();
-  reader.onload = () => {
-    preview.innerHTML += `<div class="image-block">
-                                      <img src="${reader.result}" class="image-block_loaded" id="source"/>
-                                       <h2 class="image-block__label">${label}</h2>
-                              </div>`;
-
-  };
-  reader.readAsDataURL(img);
-};
 
 const getDataRbg = async () => {
   var img = new Image();
@@ -144,7 +113,6 @@ const runModelFisrt = async () => {
 const main = async () => {
   initModel().then(() => {
     loadingMessage.classList.add("d-none")
-
     runModelFisrt().then(() => {
       snapButton.classList.remove("d-none")
     })
@@ -157,7 +125,4 @@ const main = async () => {
 tf.setBackend("webgl").then(async () => {
   main()
 })
-// fileInput.addEventListener("change", () => numberOfFiles.innerHTML = "Selected " + fileInput.files.length + " files", false);
-// predictButton.addEventListener("click", () => predict(modelURL));
 snapButton.addEventListener("click", () => snapshot());
-// clearButton.addEventListener("click", () => preview.innerHTML = "");
